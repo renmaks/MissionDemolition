@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Cloud : MonoBehaviour
 {
@@ -13,19 +14,14 @@ public class Cloud : MonoBehaviour
     private readonly Vector2 _sphereScaleRangeY = new Vector2(3, 4);
     private readonly Vector2 _sphereScaleRangeZ = new Vector2(2, 4);
     private const float _scaleYMin = 2f;
-    private List<GameObject> _spheres;
-
 
     private void Start()
     {
-        _spheres = new List<GameObject>();
-
         int num = Random.Range(_numSpheresMin, _numSpheresMax);
         for(int i = 0; i < num; i++)
         {
-            var sp = Instantiate<GameObject>(cloudSphere);
-            _spheres.Add(sp);
-            Transform spTrans = sp.transform;
+            var partOfCloud = Instantiate<GameObject>(cloudSphere);
+            Transform spTrans = partOfCloud.transform;
             spTrans.SetParent(this.transform);
 
             // Выбрать случайное местоположение
