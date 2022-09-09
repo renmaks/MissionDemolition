@@ -1,43 +1,49 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FollowCam : MonoBehaviour
 {
-    static public GameObject POI; // Ссылка на интересующий объект
+    public static GameObject POI; // Ссылка на интересующий объект
 
-    [Header("Set in Inspector")]
-    public float easing = 0.05f;
-    public Vector2 minXY = Vector2.zero;
+    private const float _easing = 0.05f;
+    private readonly Vector2 _minXY = Vector2.zero;
+    private Camera _cam;
 
     [Header("Set Dynamically")]
-    public float camZ; // Желаемая координата Z камеры
+    [SerializeField] private float _camZ; // Желаемая координата Z камеры
 
 
-    void Awake()
+    private void Awake()
     {
-        camZ = this.transform.position.z;
+        _cam = Camera.main;
+        _camZ = this.transform.position.z;
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        //if (POI == null) return; // Выйти, если нет интересующего объекта
+        SetInterestPosition(out Vector3 destination);
 
-        //// Получить позицию интересующего объекта
-        //Vector3 destination = POI.transform.position;
+        // Ограничить X и Y минимальными значениями
+        destination.x = Mathf.Max(_minXY.x, destination.x);
+        destination.y = Mathf.Max(_minXY.y, destination.y);
+        // Определить точку между текущим местоположением камеры и destination
+        destination = Vector3.Lerp(transform.position, destination, _easing);
+        // Принудительно установить значение desination.z равным camZ, чтобы отодвинуть камеру подальше
+        destination.z = _camZ;
+        // Поместить камеру в позицию destination
+        transform.position = destination;
+        // Изменить размер orthographicSize камеры, чтобы земля оставалась в поле зрения
+        _cam.orthographicSize = destination.y + 10;
+    }
 
-        Vector3 destination;
-        // Если нет интересующего объекта, вернуть P:[0,0,0]
-        if (POI == null)
-        {
-            destination = Vector3.zero;
-        }
-        else
+    // ReSharper disable Unity.PerformanceAnalysis
+    private static void SetInterestPosition(out Vector3 destination)
+    {
+        if (POI != null)
         {
             // Получить позицию интересующего объекта
             destination = POI.transform.position;
             // Если интересующий объект - снаряд, убедиться, что он остановился
-            if (POI.tag == "Projectile")
+            if (POI.CompareTag("Projectile"))
             {
                 // Если он не двигается
                 if (POI.GetComponent<Rigidbody>().IsSleeping())
@@ -49,18 +55,9 @@ public class FollowCam : MonoBehaviour
                 }
             }
         }
-
-        // Ограничить X и Y минимальными значениями
-        destination.x = Mathf.Max(minXY.x, destination.x);
-        destination.y = Mathf.Max(minXY.y, destination.y);
-        // Определить точку между текущим местоположением камеры и destination
-        destination = Vector3.Lerp(transform.position, destination, easing);
-        // Принудительно установить значение desination.z равным camZ, чтобы отодвинуть камеру подальше
-        destination.z = camZ;
-        // Поместить камеру в позицию destination
-        transform.position = destination;
-        // Изменить размер orthographicSize камеры, чтобы земля оставалась в поле зрения
-        Camera.main.orthographicSize = destination.y + 10;
+        else
+        {
+            destination = Vector3.zero;
+        }
     }
-
 }

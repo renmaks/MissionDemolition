@@ -11,7 +11,7 @@ public class CloudCrafter : MonoBehaviour
     private const float _cloudScaleMax = 3; // Макс. масштаб каждого облака
     private const float _cloudSpeedMult = 1f; // Коэффицент скорости облаков
     private GameObject[] _cloudInstances;
-    private const int _numClouds = 20; // Число облаков 
+    private const int _numClouds = 23; // Число облаков 
 
     private void Awake()
     {
@@ -20,28 +20,13 @@ public class CloudCrafter : MonoBehaviour
         // Создать в цикле заданное кол-во облаков
         for (int i = 0; i < _numClouds; i++)
         {
-            // Создать экземпляр cloudPrefab
-            var cloud = Instantiate<GameObject>(_cloudPrefab, this.transform, true);
-            // Выбрать местоположение для облака 
-            Vector3 cloudPosition = Vector3.zero;
-            cloudPosition.x = Random.Range(_cloudPosMin.x, _cloudPosMax.x);
-            cloudPosition.y = Random.Range(_cloudPosMin.y, _cloudPosMax.y);
-            // Масштабировать облако
-            float scaleU = Random.value;
-            float scaleVal = Mathf.Lerp(_cloudScaleMin, _cloudScaleMax, scaleU);
-            // Меньшие облака ( с меньшим значением scaleU ) должны быть ближе к земле
-            cloudPosition.y = Mathf.Lerp(_cloudPosMin.y, cloudPosition.y, scaleU);
-            // Меньшие облака должны быть дальше
-            cloudPosition.z = 100 - 90 * scaleU;
-            // Применить полученные значения координат и масштаба к облаку
-            cloud.transform.position = cloudPosition;
-            transform.localScale = Vector3.one * scaleVal;
+            CreateCloud(out GameObject cloud);
             // Добавить облако в массив cloudInstances
             _cloudInstances[i] = cloud;
         }
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         // Обойти в цикле все созданные облака
         foreach (GameObject cloud in _cloudInstances)
@@ -63,4 +48,27 @@ public class CloudCrafter : MonoBehaviour
             cloud.transform.position = cPos;
         }
     }
+
+    private void CreateCloud(out GameObject newCloud)
+    {
+        // Создать экземпляр cloudPrefab
+        var cloud = Instantiate<GameObject>(_cloudPrefab, this.transform, true);
+        // Выбрать местоположение для облака 
+        Vector3 cloudPosition = Vector3.zero;
+        cloudPosition.x = Random.Range(_cloudPosMin.x, _cloudPosMax.x);
+        cloudPosition.y = Random.Range(_cloudPosMin.y, _cloudPosMax.y);
+        // Масштабировать облако
+        float scaleU = Random.value;
+        float scaleVal = Mathf.Lerp(_cloudScaleMin, _cloudScaleMax, scaleU);
+        // Меньшие облака ( с меньшим значением scaleU ) должны быть ближе к земле
+        cloudPosition.y = Mathf.Lerp(_cloudPosMin.y, cloudPosition.y, scaleU);
+        // Меньшие облака должны быть дальше
+        cloudPosition.z = 100 - 90 * scaleU;
+        // Применить полученные значения координат и масштаба к облаку
+        cloud.transform.position = cloudPosition;
+        transform.localScale = Vector3.one * scaleVal;
+        
+        newCloud = cloud;
+    }
+    
 }

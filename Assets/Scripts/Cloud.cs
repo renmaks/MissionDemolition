@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine;
-using Random = UnityEngine.Random;
+﻿using UnityEngine;
 
 public class Cloud : MonoBehaviour
 {
