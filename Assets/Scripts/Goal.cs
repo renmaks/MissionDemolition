@@ -1,14 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Goal : MonoBehaviour
 {
     // Статическое поле, доступное любому другому коду
-    static public bool goalMet = false;
-
-
-    void OnTriggerEnter(Collider other)
+    public static bool goalMet = false;
+    
+    private void OnTriggerEnter(Collider other)
     {
         // Когда в область действия триггера попадает что-то, проверить, является ли это снарядом
         if (other.gameObject.tag == "Projectile")
@@ -22,5 +19,4 @@ public class Goal : MonoBehaviour
             mat.color = c;
         }
     }
-
 }

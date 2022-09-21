@@ -1,63 +1,52 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-
- public enum GameMode
-    {
-        idle,
-        playing,
-        levelEnd
-    }
-
 
 public class MissionDemolition : MonoBehaviour
 {
-    static private MissionDemolition S; // скрытый объект-одиночка
+    private static MissionDemolition singletoneMissionDemolition; // скрытый объект-одиночка
 
-    [Header("Set in Inspector")]
-    public Text uitLevel; // Ссылка на объект UIText_Level
-    public Text uitShots;
-    public Text uitButton;
-    public Vector3 castlePos;
-    public GameObject[] castles;
+    [Header("Для редактирования")]
+    [SerializeField] private Text _uiCurrentLevelText; // Ссылка на объект UIText_Level
+    [SerializeField] private Text _uiShotsText;
+    [SerializeField] private Text _uiButtonText;
+    [SerializeField] private Vector3 _castlePosition;
+    [SerializeField] private GameObject[] _castles;
+    
+    private int _currentLevel; // Текущий уровень
+    private int _levelMaxCount;
+    private int _shotsTaken;
+    private GameObject _currentCastle; // Текущий замок
+    private GameMode _gameMode = GameMode.idle;
+    private string _showingMode = "Show Slingshot"; // Режим FollowCam
 
-    [Header("Set Dynamically")]
-    public int level; // Текущий уровень
-    public int levelMax;
-    public int shotsTaken;
-    public GameObject castle; // Текущий замок
-    public GameMode mode = GameMode.idle;
-    public string showing = "Show Slingshot"; // Режим FollowCam
-
-    void Start()
+    private void Start()
     {
-        S = this;
+        singletoneMissionDemolition = this;
 
-        level = 0;
-        levelMax = castles.Length;
+        _currentLevel = 0;
+        _levelMaxCount = _castles.Length;
         StartLevel();
     }
 
-    void StartLevel()
+    private void StartLevel()
     {
         // Уничтожить прежний замок, если он существует
-        if (castle != null)
+        if (_currentCastle != null)
         {
-            Destroy(castle);
+            Destroy(_currentCastle);
         }
 
         // Уничтожить прежние снаряды, если они существуют
-        GameObject[] gos = GameObject.FindGameObjectsWithTag("Projectile");
+        var gos = GameObject.FindGameObjectsWithTag("Projectile");
         foreach(GameObject pTemp in gos)
         {
             Destroy(pTemp);
         }
 
         // Создать новый замок
-        castle = Instantiate<GameObject>(castles[level]);
-        castle.transform.position = castlePos;
-        shotsTaken = 0;
+        _currentCastle = Instantiate<GameObject>(_castles[_currentLevel]);
+        _currentCastle.transform.position = _castlePosition;
+        _shotsTaken = 0;
 
         // Переустановить камеру в начальную позицию
         SwitchView("Show Both");
@@ -68,25 +57,25 @@ public class MissionDemolition : MonoBehaviour
 
         UpdateGUI();
 
-        mode = GameMode.playing;
+        _gameMode = GameMode.playing;
     }
 
-    void UpdateGUI()
+    private void UpdateGUI()
     {
         // Показать данные в элементах ПИ
-        uitLevel.text = "Level: " + (level + 1) + " of " + levelMax;
-        uitShots.text = "Shots Taken: " + shotsTaken;
+        _uiCurrentLevelText.text = $"Level: {_currentLevel+1} of {_levelMaxCount}";
+        _uiShotsText.text = $"Shots Taken: {_shotsTaken}";
     }
 
-    void Update()
+    private void Update()
     {
         UpdateGUI();
 
         // Проверить завершение уровня
-        if ((mode == GameMode.playing) && Goal.goalMet)
+        if ((_gameMode == GameMode.playing) && Goal.goalMet)
         {
             // Изменить режим, чтобы прекратить проверку завершения уровня
-            mode = GameMode.levelEnd;
+            _gameMode = GameMode.levelEnd;
             // Уменьшить масштаб
             SwitchView("Show Both");
             // Начать новый уровень через 2 секунды
@@ -94,38 +83,40 @@ public class MissionDemolition : MonoBehaviour
         }
     }
 
-    void NextLevel()
+    // ReSharper disable Unity.PerformanceAnalysis
+    private void NextLevel()
     {
-        level++;
-        if (level== levelMax)
+        _currentLevel++;
+        if (_currentLevel== _levelMaxCount)
         {
-            level = 0;
+            _currentLevel = 0;
         }
         StartLevel();
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     public void SwitchView(string eView = "")
     {
         if (eView == "")
         {
-            eView = uitButton.text;
+            eView = _uiButtonText.text;
         }
-        showing = eView;
-        switch(showing)
+        _showingMode = eView;
+        switch(_showingMode)
         {
             case "Show Slingshot":
                 FollowCam.POI = null;
-                uitButton.text = "Show Castle";
+                _uiButtonText.text = "Show Castle";
                 break;
 
             case "Show Castle":
-                FollowCam.POI = S.castle;
-                uitButton.text = "Show Both";
+                FollowCam.POI = singletoneMissionDemolition._currentCastle;
+                _uiButtonText.text = "Show Both";
                 break;
 
             case "Show Both":
                 FollowCam.POI = GameObject.Find("ViewBoth");
-                uitButton.text = "Show Slingshot";
+                _uiButtonText.text = "Show Slingshot";
                 break;
         }
     }
@@ -133,6 +124,6 @@ public class MissionDemolition : MonoBehaviour
     // Статический метод, позволяющий из любого кода увеличить shotsTaken
     public static void ShotFired()
     {
-        S.shotsTaken++;
+        singletoneMissionDemolition._shotsTaken++;
     }
 }
