@@ -904,9 +904,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5efa30bb0f015b74197a292f3c3c3faf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  easing: 0.05
-  minXY: {x: 0, y: 0}
-  camZ: 0
+  _camZ: 0
 --- !u!114 &956559052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -919,21 +917,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 561f4f704b6f3a341bf9b4d77127aaa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uitLevel: {fileID: 867801523}
-  uitShots: {fileID: 1927142243}
-  uitButton: {fileID: 1927253097}
-  castlePos: {x: 50, y: -9.5, z: 0}
-  castles:
+  _uiCurrentLevelText: {fileID: 867801523}
+  _uiShotsText: {fileID: 1927142243}
+  _uiButtonText: {fileID: 1927253097}
+  _castlePosition: {x: 60, y: -10, z: 0}
+  _castles:
   - {fileID: 2069998691610275890, guid: 6c6cabc89e358084783615da79548ea6, type: 3}
   - {fileID: 2069998691610275890, guid: 70b8c327a56aefd4f93a3602f741be0e, type: 3}
   - {fileID: 2069998691610275890, guid: 2d61463e38195fb4fa8c329ff6d756e9, type: 3}
   - {fileID: 2069998691610275890, guid: 3c306a5fe2e3ee54b8aa57937aad9549, type: 3}
-  level: 0
-  levelMax: 0
-  shotsTaken: 0
-  castle: {fileID: 0}
-  mode: 0
-  showing: Show Slingshot
 --- !u!1 &1207597428
 GameObject:
   m_ObjectHideFlags: 0
@@ -1225,7 +1217,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90cccb0579775124c9b0c8b1c3ee0af2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minDist: 0.1
 --- !u!120 &1489410093
 LineRenderer:
   m_ObjectHideFlags: 0
