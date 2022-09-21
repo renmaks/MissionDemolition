@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Slingshot : MonoBehaviour
 {
-    static private Slingshot S;
-    // Поля, устанавливаемые в инспекторе Unity
+    private static Slingshot singletoneSlingshot;
+    
     [Header("Set in Inspector")]
     public GameObject prefabProjectile;
     public float velocityMult = 8f;
@@ -19,40 +17,40 @@ public class Slingshot : MonoBehaviour
 
     private Rigidbody projectileRigidbody;
 
-    static public Vector3 LAUNCH_POS
+    public static Vector3 LAUNCH_POS
     {
         get
         {
-            if (S == null)
+            if (singletoneSlingshot == null)
             {
                 return Vector3.zero;
             }
-            return S.launchPos;
+            return singletoneSlingshot.launchPos;
         }
     }
 
-     void Awake()
+    private void Awake()
     {
-        S = this;
+        singletoneSlingshot = this;
         Transform launchPointTrans = transform.Find("LaunchPoint");
         launchPoint = launchPointTrans.gameObject;
         launchPoint.SetActive(false);
         launchPos = launchPointTrans.position;
     }
 
-    void OnMouseEnter()
+    private void OnMouseEnter()
     {
         //print("Slingshot:OnMouseEnter()");
         launchPoint.SetActive(true);
     }
 
-     void OnMouseExit()
+    private void OnMouseExit()
     {
         //print("Slingshot:OnMouseExit()");
         launchPoint.SetActive(false);
     }
 
-     void OnMouseDown()
+    private void OnMouseDown()
     {
         // Игрок нажал кнопку мыши, когда указатель находился над рогаткой
         aimingMode = true;
@@ -65,7 +63,7 @@ public class Slingshot : MonoBehaviour
         projectileRigidbody.isKinematic = true;
     }
 
-     void Update()
+    private void Update()
     {
         // Если рогатка не в режиме прицеливания, не выполнять этот код
         if (!aimingMode)
@@ -98,7 +96,7 @@ public class Slingshot : MonoBehaviour
             FollowCam.POI = projectile;
             projectile = null;
             MissionDemolition.ShotFired();
-            ProjectileLine.S.poi = projectile;
+            ProjectileLine.SingletoneProjectileLine.poi = projectile;
         }
     }
 

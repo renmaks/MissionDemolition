@@ -50,7 +50,7 @@ public class MissionDemolition : MonoBehaviour
 
         // Переустановить камеру в начальную позицию
         SwitchView("Show Both");
-        ProjectileLine.S.Clear();
+        ProjectileLine.SingletoneProjectileLine.Clear();
 
         // Сбросить цель
         Goal.goalMet = false;

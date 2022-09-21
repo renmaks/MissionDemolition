@@ -1,19 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class RigidbodySleep : MonoBehaviour
 {
-
-
-
-    void Start()
+    private void Start()
     {
-        Rigidbody rb = GetComponent<Rigidbody>();
+        var rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
             rb.Sleep();
         }
     }
-
 }
