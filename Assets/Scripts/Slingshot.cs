@@ -2,7 +2,7 @@
 
 public class Slingshot : MonoBehaviour
 {
-    private static Slingshot singletoneSlingshot;
+    public static Slingshot singletoneSlingshot;
     
     [Header("Set in Inspector")]
     public GameObject prefabProjectile;
